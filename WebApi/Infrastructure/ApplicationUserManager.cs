@@ -3,6 +3,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using System;
+using WebApi.Validators;
 
 namespace WebApi.Infrastructure
 {
@@ -22,7 +23,14 @@ namespace WebApi.Infrastructure
             var appUserManager = new ApplicationUserManager(new UserStore<ApplicationUser>(appDbContext));
 
             // Configuramos la validacion para el usuario
-            appUserManager.UserValidator = new UserValidator<ApplicationUser>(appUserManager)
+            // appUserManager.UserValidator = new UserValidator<ApplicationUser>(appUserManager)
+            // {
+            //     AllowOnlyAlphanumericUserNames = true,
+            //     RequireUniqueEmail = true
+            // };
+
+            // Utilizamos la validacion personalizada.
+            appUserManager.UserValidator = new MyCustomUserValidator(appUserManager)
             {
                 AllowOnlyAlphanumericUserNames = true,
                 RequireUniqueEmail = true

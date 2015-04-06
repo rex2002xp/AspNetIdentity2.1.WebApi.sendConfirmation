@@ -152,6 +152,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Validators\MyCustomUserValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201504031844235_InitialCreate.resx">
