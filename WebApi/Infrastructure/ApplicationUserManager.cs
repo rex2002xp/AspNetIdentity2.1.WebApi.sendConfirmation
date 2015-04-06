@@ -37,7 +37,17 @@ namespace WebApi.Infrastructure
             };
 
             // Configuramos la validacion para el password
-            appUserManager.PasswordValidator = new PasswordValidator
+            //appUserManager.PasswordValidator = new PasswordValidator
+            //{
+            //    RequiredLength = 6,
+            //    RequireNonLetterOrDigit = true,
+            //    RequireDigit = false,
+            //    RequireLowercase = true,
+            //    RequireUppercase = true
+            //};
+
+            // Utilizamos la validacion personalizada para la contraseña.
+            appUserManager.PasswordValidator = new MyCustomPasswordValidator
             {
                 RequiredLength = 6,
                 RequireNonLetterOrDigit = true,
