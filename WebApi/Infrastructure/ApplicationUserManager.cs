@@ -21,6 +21,23 @@ namespace WebApi.Infrastructure
             var appDbContext = context.Get<ApplicationDbContext>();
             var appUserManager = new ApplicationUserManager(new UserStore<ApplicationUser>(appDbContext));
 
+            // Configuramos la validacion para el usuario
+            appUserManager.UserValidator = new UserValidator<ApplicationUser>(appUserManager)
+            {
+                AllowOnlyAlphanumericUserNames = true,
+                RequireUniqueEmail = true
+            };
+
+            // Configuramos la validacion para el password
+            appUserManager.PasswordValidator = new PasswordValidator
+            {
+                RequiredLength = 6,
+                RequireNonLetterOrDigit = true,
+                RequireDigit = false,
+                RequireLowercase = true,
+                RequireUppercase = true
+            };
+
             appUserManager.EmailService = new WebApi.Services.EmailService();
 
             var dataProtectionProvider = options.DataProtectionProvider;
