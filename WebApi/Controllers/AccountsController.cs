@@ -133,5 +133,30 @@ namespace WebApi.Controllers
 
             return Ok();
         }
+
+        [Route("user/{id:guid}")]
+        public async Task<IHttpActionResult> DeleteUser(string id)
+        {
+
+            // Seria una excelente idea, que esta opcion solo este disponible para los usuarios Super 
+            // Administradores o Administradores , esto lo implementaremos mas adelante.
+
+            var appUser = await this.AppUserManager.FindByIdAsync(id);
+
+            if (appUser != null)
+            {
+                IdentityResult result = await this.AppUserManager.DeleteAsync(appUser);
+
+                if (!result.Succeeded)
+                {
+                    return GetErrorResult(result);
+                }
+
+                return Ok();
+            }
+
+            return NotFound();
+
+        }
     }
 }
