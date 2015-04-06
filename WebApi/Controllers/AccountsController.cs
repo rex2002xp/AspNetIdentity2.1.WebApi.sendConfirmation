@@ -9,7 +9,7 @@ using WebApi.Infrastructure;
 namespace WebApi.Controllers
 {
     [RoutePrefix("api/accounts")]
-    public class AccountsController :  BaseApiController
+    public class AccountsController : BaseApiController
     {
         [Route("users")]
         public IHttpActionResult GetUsers()
@@ -70,9 +70,50 @@ namespace WebApi.Controllers
                 return GetErrorResult(addUserResult);
             }
 
-            Uri locationHeader = new Uri(Url.Link("GetUserById", new { id = user.Id }));
+            // Generacion del codigo para confirmacion.
+            string code = await this.AppUserManager.GenerateEmailConfirmationTokenAsync(user.Id);
 
-            return Created(locationHeader, TheModelFactory.Create(user));
+            // Generacion del Link para confirmacion.
+            var callbackUrl = new Uri(
+                Url.Link("ConfirmEmailRoute", new { userId = user.Id, code = code })
+                );
+            try
+            {
+                // Envio de correo al usuario.
+                await this.AppUserManager.SendEmailAsync(user.Id, "WebApi Rest Confirmacion", "Hemos recibido tu solicitud. Por favor confirma tu cuenta haciendo clic <a href=\"" + callbackUrl + "\">AQUI</a>");
+
+                Uri locationHeader = new Uri(Url.Link("GetUserById", new { id = user.Id }));
+
+                return Created(locationHeader, TheModelFactory.Create(user));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+
+        }
+
+        [HttpGet]
+        [Route("ConfirmEmail", Name = "ConfirmEmailRoute")]
+        public async Task<IHttpActionResult> ConfirmEmail(string userId = "", string code = "")
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(code))
+            {
+                ModelState.AddModelError("", "User Id and Code are required");
+                return BadRequest(ModelState);
+            }
+
+            IdentityResult result = await this.AppUserManager.ConfirmEmailAsync(userId, code);
+
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return GetErrorResult(result);
+            }
         }
     }
 }
